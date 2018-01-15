@@ -18,7 +18,9 @@ $(document).ready(function() {
   var firstTime = 0;
   var frequency = moment().format("HH:mm");
   var arrival = moment().format("HH:mm");
-  currentTime = moment().format("h:mm A");
+  var currentTime = moment().format("h:mm A");
+  var minAway = moment().format("h:mm A");
+
   console.log(currentTime);
 
 $("#submit").on("click", function(event) {
@@ -32,8 +34,10 @@ $("#submit").on("click", function(event) {
   var newFrequency = parseInt($("#frequency-input").val());
 
   var nextArrival = moment(newStartTime, "h:mm A").add(newFrequency , 'm').format("h:mm A");
-  var away = moment(currentTime, "h:mm A").subtract(nextArrival , 'h:mm A').format('m');
+  var away = moment(nextArrival, "h:mm A").subtract(currentTime , 'h:mm A').format('m');
   console.log(away);
+  console.log(nextArrival);
+  console.log(currentTime);
 
   // var firstTimeConverted = moment(newStartTime, "hh:mm").subtract(1, "years");
   // console.log(firstTimeConverted);
@@ -54,7 +58,9 @@ $("#submit").on("click", function(event) {
     destination: newDestination,
     startDate: newStartTime,
     frequency: newFrequency,
-    arrival: nextArrival
+    arrival: nextArrival,
+    minAway: away
+
     //dateAdded: firebase.database.ServerValue.TIMESTAMP
   });
 
@@ -72,7 +78,7 @@ database.ref().on("child_added", function(childSnapshot) {
   // Log everything that's coming out of snapshot
   console.log(childSnapshot.val().name);
   console.log(childSnapshot.val().destination);
-  console.log(childSnapshot.val().firstTime);
+  console.log(childSnapshot.val().arrival);
   console.log(childSnapshot.val().frequency);
 
   var newRow = $("<tr>");
@@ -80,10 +86,11 @@ database.ref().on("child_added", function(childSnapshot) {
   var destinationCell = $("<td>").text(childSnapshot.val().destination);
   var frequencyCell = $("<td>").text(childSnapshot.val().frequency);
   var nextArrivalCell = $("<td>").text(childSnapshot.val().arrival);
+  var minutesAwayCell = $("<td>").text(childSnapshot.val().minAway);
   // var minutesAwayCell = $("<td>").text(childSnapshot.val().frequency);
   // var totalBilledCell = $("<td>").text("");
 
-  newRow.append(nameCell, destinationCell, frequencyCell, nextArrivalCell);
+  newRow.append(nameCell, destinationCell, frequencyCell, nextArrivalCell , minutesAwayCell);
 
   $("#table-body").append(newRow);
 
